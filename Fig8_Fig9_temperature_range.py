@@ -413,7 +413,6 @@ def test_significance(dist1, dist2, alpha=0.05):
     print('*********************************************************************')
 
 
-
 var_list = [ "T2MAX", "TEMP2" , "T2MIN"]
 
 for v, (var, fig_name) in enumerate(zip(var_list, fig_name_list)): 
@@ -437,6 +436,11 @@ for v, (var, fig_name) in enumerate(zip(var_list, fig_name_list)):
         print('Variable not in var_list.')
 
 ############################# spatial distributiont ###################################################
+
+import cartopy.crs as ccrs
+import cartopy.feature as cfeature
+import matplotlib.pyplot as plt
+
 
 def earth_feature(name_obj, res, col, cat):
     lines = cfeature.NaturalEarthFeature(
@@ -501,6 +505,9 @@ def plot_rotvar_adjust_cbar_vmin(
     axs.gridlines(linewidth=0.7, color="gray", alpha=0.8, linestyle="--", zorder=3)
     return rotplot
 
+
+
+
 t2max_diff_11   = (calc_t2max_diff(po_irri_GAR_split, po_noirri_GAR_split)).where(po_noirri_GAR_split.BLA>0.5)
 t2max_diff_0275 = (calc_t2max_diff(po_irri_SGAR, po_noirri_SGAR)).where(po_irri_SGAR.BLA>0.5)
 
@@ -521,11 +528,23 @@ plot_diffdiff_list  = [diffdiff_t2max.sel(month = 6), diffdiff_t2mean.sel(month 
 title_list          = ['T2Max', 'T2Mean','T2Min']
 
 
+gridbox_t2max = 33
+x1_t2max, y1_t2max =[ diffdiff_t2max.rlon[0], diffdiff_t2max.rlon[-1]],[ diffdiff_t2max.rlat[gridbox_t2max], diffdiff_t2max.rlat[gridbox_t2max]]
+gridbox_t2min = 33
+x1_t2min, y1_t2min =[ diffdiff_t2min.rlon[0], diffdiff_t2min.rlon[-1]],[ diffdiff_t2min.rlat[gridbox_t2min], diffdiff_t2min.rlat[gridbox_t2min]]
+
+gridbox_lon = 105
+x_gridbox =  diffdiff_t2min.rlon[gridbox_lon]
+y_gridbox =  diffdiff_t2min.rlat[gridbox_t2min]
+
 fig_name_11    = ['(a)', '(d)', '(g)']
 fig_name_0275  = ['(b)', '(e)', '(h)']
 fig_name_diff  = ['(c)', '(f)', '(i)']
 
+
+
 fig = plt.figure(figsize=(18,10))
+#fig.suptitle('Irrigation effects in June 2017')
 spec = fig.add_gridspec(ncols=3, nrows=3)
 
 cax1 = fig.add_axes([0.22, 0.08, 0.35, 0.02])
@@ -563,13 +582,10 @@ for i, (plot_diff_11, plot_diff_0275, plot_diffdiff, title) in enumerate(zip(plo
     ax3.text(0.035, 0.964, 'diff*', transform=ax3.transAxes, fontsize=12, fontweight='bold', va='top', bbox=dict(facecolor='white', edgecolor='black', pad=4.0), zorder=+6)
     ax3.text(0.0, 1.05, fig_name_diff[i], transform=ax3.transAxes, fontsize=14)
     # Overlay mask on the existing plot
-    hatchplot = ax3.contourf(irrifrac_change['rlon'], irrifrac_change['rlat'], irrifrac_change, levels=[-0.5, 0.5, 1.5],hatches=['....', '/////'], colors='none', alpha=0, 
+    hatchplot = ax3.contourf(irrifrac_change['rlon'], irrifrac_change['rlat'], irrifrac_change, levels=[-0.5, 0.5, 1.5],hatches=['......', '//////'], colors = ['None'], 
                 zorder = 7)
-        
 plt.subplots_adjust(hspace = 0.3)
-#plt.savefig(dir_out+'/extreme_temperature_spatial_new.png', dpi=300, bbox_inches='tight')
-
-
+plt.savefig(dir_out+'/extreme_temperature_spatial_new.png', dpi=300, bbox_inches='tight')
 
 ############################# irrifrac change mask ###################################################
 # create mask for vertical profiles
